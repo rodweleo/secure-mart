@@ -5,7 +5,7 @@ export default function Login() {
     return (
         <main className="grid place-items-center h-screen">
             <div className="space-y-5 grid place-items-center">
-                <h1 className="font-bold text-5xl">Secure<span className="text-yellow-500">Matt</span></h1>
+                <h1 className="font-bold text-5xl"><span className="text-yellow-500">Secure</span>Mart </h1>
                 <div className="w-fit border p-5 rounded-md space-y-4">
                     <div>
                         <h1 className="font-bold text-3xl space-y-2">Sign In</h1>
