@@ -1,4 +1,4 @@
-import {RotatingLines} from "react-loader-spinner"
+import { RotatingLines } from "react-loader-spinner"
 
 export default function Loader({ size }) {
     return (
@@ -12,7 +12,7 @@ export default function Loader({ size }) {
             ariaLabel="rotating-lines-loading"
             wrapperStyle={{}}
             wrapperClass=""
-            
+
         />
     )
 }

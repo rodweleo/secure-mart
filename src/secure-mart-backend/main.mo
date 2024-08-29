@@ -1,10 +1,6 @@
-import Debug "mo:base/Debug";
 import Blob "mo:base/Blob";
 import Cycles "mo:base/ExperimentalCycles";
-import Error "mo:base/Error";
 import Array "mo:base/Array";
-import Nat8 "mo:base/Nat8";
-import Nat64 "mo:base/Nat64";
 import Text "mo:base/Text";
 import Types "Types";
 import Principal "mo:base/Principal";
@@ -36,39 +32,33 @@ actor {
 
   public func get_products() : async Text {
 
-    // Define the management canister
     let ic : Types.IC = actor ("aaaaa-aa");
 
-    // Set up the URL for the request
     let host : Text = "dummyjson.com";
     let url : Text = "https://" # host # "/products";
 
-    // Set up the headers for the request
     let request_headers = [
       { name = "Host"; value = host # ":443" },
       { name = "User-Agent"; value = "product_canister" },
     ];
 
-    // Define the transformation context
     let transform_context : Types.TransformContext = {
       function = transform;
       context = Blob.fromArray([]);
     };
 
-    // Create the HTTP request
     let http_request : Types.HttpRequestArgs = {
       url = url;
-      max_response_bytes = null; // optional for request
+      max_response_bytes = null;
       headers = request_headers;
-      body = null; // optional for request
+      body = null;
       method = #get;
       transform = ?transform_context;
     };
 
     // Add cycles for the request
-    Cycles.add(20_949_972_000);
+    Cycles.add(20_849_587_200);
 
-    // Make the HTTP request and wait for the response
     let http_response : Types.HttpResponsePayload = await ic.http_request(http_request);
 
     // Convert the response body from Nat8 array to a Blob
@@ -81,6 +71,56 @@ actor {
     };
 
     // Optionally, extract and return the products array from the decoded JSON text
+    decoded_text;
+  };
+
+  public func searchProduct(productName : Text) : async Text {
+
+    // Defining the management canister
+    let ic : Types.IC = actor ("aaaaa-aa");
+
+    // Setting up the URL for the request
+    let host : Text = "dummyjson.com";
+    let url : Text = "https://" # host # "/products/search?q=" # productName;
+
+    // Setting up the headers for the request
+    let request_headers = [
+      { name = "Host"; value = host # ":443" },
+      { name = "User-Agent"; value = "product_canister" },
+    ];
+
+    // Defining the transformation context
+    let transform_context : Types.TransformContext = {
+      function = transform;
+      context = Blob.fromArray([]);
+    };
+
+    // Creating the HTTP request
+    let http_request : Types.HttpRequestArgs = {
+      url = url;
+      max_response_bytes = null;
+      headers = request_headers;
+      body = null;
+      method = #get;
+      transform = ?transform_context;
+    };
+
+    // Add cycles for the request
+    Cycles.add(20_849_587_200);
+
+    // Making the HTTP request and waiting for the response
+    let http_response : Types.HttpResponsePayload = await ic.http_request(http_request);
+
+    // Converting the response body from Nat8 array to a Blob
+    let response_body : Blob = Blob.fromArray(http_response.body);
+
+    // Decoding the Blob into a UTF-8 Text string
+    let decoded_text : Text = switch (Text.decodeUtf8(response_body)) {
+      case (null) { "No value returned" };
+      case (?y) { y };
+    };
+
+    // returning the found products
     decoded_text;
   };
 
@@ -116,7 +156,7 @@ actor {
     };
 
     // Add cycles for the request
-    Cycles.add(20_949_972_000);
+    Cycles.add(20_849_587_200);
 
     // Make the HTTP request and wait for the response
     let http_response : Types.HttpResponsePayload = await ic.http_request(http_request);

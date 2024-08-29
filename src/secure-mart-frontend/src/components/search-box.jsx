@@ -1,34 +1,44 @@
 import { Search, SearchIcon } from "lucide-react";
-import axios from "axios"
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
+import BackendActor from "../utils/BackendActor";
+import Loader from "./loader";
 
 export default function SearchBox() {
   const [searchResults, setSearchResults] = useState([]);
   const navigate = useNavigate();
+  const [isSearching, setIsSearching] = useState(false);
 
   const searchProduct = async (query) => {
-
     if (query.length > 0) {
       try {
-        const res = await axios.get(`https://dummyjson.com/products/search?q=${query}`);
-        setSearchResults(res.data.products)
+        const response = await BackendActor.searchProduct(query);
+        const modRes = JSON.parse(response);
+        if (modRes) {
+          setSearchResults(modRes.products);
+          setIsSearching(false);
+        }
+        setIsSearching(false);
       } catch (e) {
         setSearchResults([])
+        setIsSearching(false);
       }
     } else {
       setSearchResults([])
+      setIsSearching(false);
     }
   }
 
   const handleSearchAction = (e) => {
     const searchQuery = e.target.value;
     if (searchQuery.length > 0) {
+      setIsSearching(true)
       setTimeout(() => {
         searchProduct(searchQuery);
       }, 500)
     } else {
       setSearchResults([])
+      setIsSearching(false)
     }
   }
 
@@ -55,6 +65,8 @@ export default function SearchBox() {
         <input type="search" onChange={handleSearchAction} placeholder='Search' className="h-full w-full outline-none" />
         <button type="submit" className='text-yellow-500 w-fit rounded-r-lg' title="Search SecureMart"><Search /></button>
       </div>
+      {isSearching && <div className="scale-[0.5]">
+        <Loader size={20} /></div>}
 
       {searchResults && searchResults.length > 0 ? <ul className="absolute h-[400px] overflow-y-scroll bg-slate-50/50 backdrop-blur-md border w-full top-[50px] rounded-2xl p-2.5">{searchResults.map((result) => (
         <li key={result.id} onClick={() => selectProduct(result)} className="cursor-pointer px-2.5 flex gap-1 items-center hover:bg-yellow-500 rounded-xl hover:text-white text-lg py-2"><SearchIcon className="text-slate-300" size={20} />{result.title}</li>
