@@ -61,8 +61,8 @@ export default function SearchBox() {
 
   return (
     <form onSubmit={handleFormSubmit} method="POST" className='flex items-center w-fit relative'>
-      <div className='px-6 h-12 flex outline-none border border-yellow-500 focus:border-2 focus:border-yellow-500 rounded-full w-[400px]'>
-        <input type="search" onChange={handleSearchAction} placeholder='Search' className="h-full w-full outline-none" />
+      <div className='px-5 h-10 flex outline-none border border-yellow-500 focus-within:border-[3px] focus:border-yellow-500 rounded-full w-[300px]'>
+        <input type="search" onChange={handleSearchAction} placeholder='Search electronics, furniture, clothes ...' className="h-full w-full outline-none" />
         <button type="submit" className='text-yellow-500 w-fit rounded-r-lg' title="Search SecureMart"><Search /></button>
       </div>
       {isSearching && <div className="scale-[0.5]">

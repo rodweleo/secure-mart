@@ -57,7 +57,7 @@ actor {
     };
 
     // Add cycles for the request
-    Cycles.add(20_849_587_200);
+    Cycles.add(20_949_972_000);
 
     let http_response : Types.HttpResponsePayload = await ic.http_request(http_request);
 
@@ -106,7 +106,7 @@ actor {
     };
 
     // Add cycles for the request
-    Cycles.add(20_849_587_200);
+    Cycles.add(20_949_972_000);
 
     // Making the HTTP request and waiting for the response
     let http_response : Types.HttpResponsePayload = await ic.http_request(http_request);
@@ -132,6 +132,56 @@ actor {
     // Set up the URL for the request
     let host : Text = "dummyjson.com";
     let url : Text = "https://" # host # "/products/" # Nat.toText(productId);
+
+    // Set up the headers for the request
+    let request_headers = [
+      { name = "Host"; value = host # ":443" },
+      { name = "User-Agent"; value = "product_canister" },
+    ];
+
+    // Define the transformation context
+    let transform_context : Types.TransformContext = {
+      function = transform;
+      context = Blob.fromArray([]);
+    };
+
+    // Create the HTTP request
+    let http_request : Types.HttpRequestArgs = {
+      url = url;
+      max_response_bytes = null; // optional for request
+      headers = request_headers;
+      body = null; // optional for request
+      method = #get;
+      transform = ?transform_context;
+    };
+
+    // Add cycles for the request
+    Cycles.add(20_849_587_200);
+
+    // Make the HTTP request and wait for the response
+    let http_response : Types.HttpResponsePayload = await ic.http_request(http_request);
+
+    // Convert the response body from Nat8 array to a Blob
+    let response_body : Blob = Blob.fromArray(http_response.body);
+
+    // Decode the Blob into a UTF-8 Text string
+    let decoded_text : Text = switch (Text.decodeUtf8(response_body)) {
+      case (null) { "No value returned" };
+      case (?y) { y };
+    };
+
+    // Optionally, extract and return the prodict from the decoded JSON text
+    decoded_text;
+  };
+  
+  public func getCategoryProducts(category : Text) : async Text {
+
+    // Define the management canister
+    let ic : Types.IC = actor ("aaaaa-aa");
+
+    // Set up the URL for the request
+    let host : Text = "dummyjson.com";
+    let url : Text = "https://" # host # "/products/category/" # category;
 
     // Set up the headers for the request
     let request_headers = [

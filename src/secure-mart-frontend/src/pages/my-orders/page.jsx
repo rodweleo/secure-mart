@@ -9,6 +9,8 @@ export default function MyOrders() {
     return <main className="p-5 space-y-5 bg-white">
         <h1 className="font-bold text-2xl">My Orders [{data ? data.length : 0}]</h1>
         {isFetching ? <Loader size={50} /> : null}
-        {data ? <OrderList orders={data} /> : null}
+        <div className="overflow-x-auto">
+            {data ? <OrderList orders={data} /> : null}
+        </div>
     </main>
 }

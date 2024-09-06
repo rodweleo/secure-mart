@@ -4,7 +4,7 @@ export default function OrderList({ orders }) {
     return (
         <table className="w-full border" id="order-list-table">
             <thead>
-                <tr className="text-left">
+                <tr className="text-left text-slate-400">
                     <th className="p-4">#</th>
                     <th>Order ID</th>
                     <th>Items</th>
