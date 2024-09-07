@@ -9,15 +9,11 @@ export const getIdentityProvider = () => {
   // Safeguard against server rendering
   if (typeof window !== "undefined") {
     const isLocal = process.env.DFX_NETWORK !== "ic";
-    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-    if (isLocal && isSafari) {
-      idpProvider = `http://localhost:4943/?canisterId=${process.env.CANISTER_ID_INTERNET_IDENTITY}`;
-    } else if (isLocal) {
+    //const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    if (isLocal) {
       idpProvider = `http://${process.env.CANISTER_ID_INTERNET_IDENTITY}.localhost:4943`;
-    } else if (process.env.DFX_NETWORK === "ic") {
-      idpProvider = `https://${process.env.CANISTER_ID_INTERNET_IDENTITY}.ic0.app`;
     } else {
-      idpProvider = `https://${process.env.CANISTER_ID}.dfinity.network`;
+      idpProvider = `https://identity.ic0.app`;
     }
   }
   return idpProvider;

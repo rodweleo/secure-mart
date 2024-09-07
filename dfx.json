@@ -13,7 +13,10 @@
     },
     "secure-mart-backend": {
       "main": "src/secure-mart-backend/main.mo",
-      "type": "motoko"
+      "type": "motoko",
+      "declarations": {
+        "node_compatibility": true
+      }
     },
     "secure-mart-frontend": {
       "dependencies": [
