@@ -11,37 +11,32 @@
       "type": "custom",
       "wasm": "https://github.com/dfinity/internet-identity/releases/latest/download/internet_identity_dev.wasm.gz"
     },
-    "secure-mart-backend": {
-      "main": "src/secure-mart-backend/main.mo",
-      "type": "motoko",
-      "declarations": {
-        "node_compatibility": true
-      }
+    "secure_mart_backend": {
+      "main": "src/secure_mart_backend/main.mo",
+      "type": "motoko"
     },
-    "secure-mart-frontend": {
+    "secure_mart_frontend": {
       "dependencies": [
-        "secure-mart-backend"
+        "secure_mart_backend"
       ],
+      "frontend": {
+        "entrypoint": "src/secure_mart_frontend/src/index.html"
+      },
       "source": [
-        "src/secure-mart-frontend/dist"
+        "src/secure_mart_frontend/dist"
       ],
       "type": "assets",
-      "workspace": "secure-mart-frontend"
+      "gzip": true,
+      "workspace": "src/secure_mart_frontend"
     }
   },
   "defaults": {
-    "bitcoin": {
-      "enabled": true,
-      "log_level": "info",
-      "nodes": [
-        "127.0.0.1:18444"
-      ]
-    },
     "build": {
       "args": "",
       "packtool": ""
     }
   },
+
   "output_env_file": ".env",
   "version": 1
 }

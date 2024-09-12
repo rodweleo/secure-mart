@@ -1,8 +1,8 @@
 {
-  "secure-mart-backend": {
+  "": {
     "ic": "gcrbe-lqaaa-aaaak-qiwba-cai"
   },
-  "secure-mart-frontend": {
+  "secure_mart_frontend": {
     "ic": "gfqhq-giaaa-aaaak-qiwbq-cai"
   }
 }

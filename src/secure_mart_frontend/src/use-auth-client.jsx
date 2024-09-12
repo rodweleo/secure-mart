@@ -1,6 +1,6 @@
 import { AuthClient } from "@dfinity/auth-client";
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { canisterId, createActor } from "../../declarations/secure-mart-backend";
+import { canisterId, createActor } from "../../declarations/secure_mart_backend";
 
 const AuthContext = createContext();
 
