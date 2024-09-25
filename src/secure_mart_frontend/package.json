@@ -41,10 +41,10 @@
   "name": "secure-mart-frontend",
   "private": true,
   "scripts": {
+    "prebuild": "dfx generate",
     "build": "tsc && vite build",
     "format": "prettier --write \"src/**/*.{json,js,jsx,ts,tsx,css,scss}\"",
-    "prebuild": "dfx generate",
-    "setup": "npm i && dfx canister create secure-mart-backend && dfx generate secure-mart-backend && dfx deploy",
+    "setup": "npm i && dfx canister create  && dfx generate  && dfx deploy",
     "start": "vite --port 3000",
     "test": "vitest run"
   },
