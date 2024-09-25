@@ -4,7 +4,6 @@ import { useCanisterProductsQuery } from "../../react-queries/useCanisterProduct
 
 export default function Homepage(){
     const { data, error, isFetching } = useCanisterProductsQuery()
-
     return <main>
         {error && <div>{error.message}</div>}
         {isFetching && <Loader size={50}/>}

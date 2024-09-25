@@ -6,14 +6,13 @@
   "name": "secure-mart",
   "scripts": {
     "build": "npm run build --workspaces --if-present",
-    "prebuild": "npm run prebuild --workspaces --if-present",
     "pretest": "npm run prebuild --workspaces --if-present",
     "start": "npm start --workspaces --if-present",
     "test": "npm test --workspaces --if-present"
   },
   "type": "module",
   "workspaces": [
-    "src/secure-mart-frontend"
+    "src/secure_mart_frontend"
   ],
   "dependencies": {
     "@dfinity/auth-client": "^2.0.0",

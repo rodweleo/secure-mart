@@ -1,7 +1,13 @@
 import { useLocation } from "react-router-dom"
-import { Minus, Plus, Star } from 'lucide-react';
+import { Minus, Plus, Star, StarHalf } from 'lucide-react';
 import { ShoppingCart } from 'lucide-react';
+<<<<<<< HEAD:src/secure-mart-frontend/src/pages/products/[id]/page.jsx
 import { useState } from "react";
+=======
+import { useEffect, useRef, useState } from "react";
+import { useDispatch } from "react-redux";
+import { addProductToCart } from "../../../state-management/slices/cartSlice";
+>>>>>>> ebd4bdfd89f3be9e20bde182613fca34b1c6bd3f:src/secure_mart_frontend/src/pages/products/[id]/page.jsx
 import { toast } from "react-toastify"
 import ProductReviewCard from "../../../components/product-review-card"
 import RelatedProducts from "../../../components/related-products";
@@ -13,7 +19,7 @@ export default function ProductPage() {
     const { product } = location.state;
     const [selectedProductImage, setSelectedimage] = useState(product.images[0])
     const [quantity, setQuantity] = useState(0);
-
+    const [rating, setRating] = useState(Math.round(product.rating * 2) / 2)
     const increaseQuantity = () => {
         setQuantity((prev) => prev + 1)
     }
@@ -27,6 +33,7 @@ export default function ProductPage() {
 
     const addToCart = async () => {
         if (quantity === 0) {
+            toast.warn("Please select a quantity before adding the product to your cart.")
             return;
         }
         try {
@@ -50,6 +57,26 @@ export default function ProductPage() {
         setSelectedimage(imageSrc)
     }
 
+    useEffect(() => {
+        setSelectedimage(product.images[0])
+        setRating(Math.round(product.rating * 2) / 2)
+    }, [product])
+
+      // Helper function to render stars based on rating
+  const renderStars = () => {
+    const stars = [];
+    for (let i = 1; i < 6; i++) {
+      if (i <= rating) {
+        // Full star
+        stars.push(<Star key={`star-${i}`} fill={"#ffe234"} color="gold" />);
+      } else if (i - 0.5 === rating) {
+        // Half star for decimal ratings
+        stars.push(<StarHalf key={`star-${i}`} fill={"#ffe234"} color="gold" />);
+      }
+    }
+    return stars;
+  };
+
     return (
         <main className="space-y-5">
             <section className="rounded-xl bg-white w-full h-fit flex flex-wrap gap-10 p-5 border">
@@ -69,11 +96,7 @@ export default function ProductPage() {
                         <p className="text-lg text-slate-500">{product.description}</p>
                         <div className="flex items-center gap-4">
                             <ul className="flex gap-1">
-                                <li><Star /></li>
-                                <li><Star /></li>
-                                <li><Star /></li>
-                                <li><Star /></li>
-                                <li><Star /></li>
+                                {renderStars()}
                             </ul>
                             <span className="text-xl text-slate-500 font-medium">{product.reviews.length} reviews</span>
                         </div>

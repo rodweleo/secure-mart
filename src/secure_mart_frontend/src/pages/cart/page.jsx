@@ -70,7 +70,6 @@ export default function CartPage() {
 
     const completeOrder = async () => {
         setIsOrdering(true)
-
         const orderDate = new Date().getFullYear() + "/" + new Date().getMonth() + "/" + new Date().getDate();
 
         const customerPrincipal = await BackendActor.whoami();
@@ -95,16 +94,20 @@ export default function CartPage() {
             <section className="w-full p-5 space-y-5 justify-between flex flex-col bg-white border rounded-lg">
                 <header className="flex justify-between font-bold text-xl sm:text-2xl">
                     <h1>Shopping Cart</h1>
-                    <span>{data ? data.length : 0} Item{data ? data.length > 1 ? "s" : null : null}</span>
+                    <span>{data.length ? data.length : 0} Item{data.length > 1 ? "s": ""}</span>
                 </header>
                 <div className="overflow-x-auto">
                     {
+<<<<<<< HEAD:src/secure-mart-frontend/src/pages/cart/page.jsx
                         data ? <CartListItems cartItems={data[0].cart} /> : null
+=======
+                        data.length ? <CartListItems cartItems={data} /> : null
+>>>>>>> ebd4bdfd89f3be9e20bde182613fca34b1c6bd3f:src/secure_mart_frontend/src/pages/cart/page.jsx
                     }
                 </div>
                 <Link to="/" className="w-fit flex items-center gap-1 font-semibold text-yellow-500 text-sm hover:underline hover:gap-2 duration-300 ease-in-out transition-all"><FaArrowLeftLong className="h-fit mt-[2px]" /> Continue Shopping</Link>
             </section>
-            <section className="bg-white border rounded-lg w-full max-w-xs p-5 flex flex-col justify-between h-fit space-y-5">
+            {data.length ? <section className="bg-white border rounded-lg w-full max-w-xs p-5 flex flex-col justify-between h-fit space-y-5">
                 <header className="space-y-2.5">
                     <h1 className="flex justify-between font-bold text-xl sm:text-2xl">Order Summary</h1>
                     <hr className="bg-slate-300 h-0.5 w-full" />
@@ -116,7 +119,7 @@ export default function CartPage() {
                     </div>
                     <button onClick={() => setOpen(true)} className="w-full bg-yellow-500 hover:bg-yellow-400 py-4 rounded-lg text-white font-semibold active:scale-95">CHECKOUT</button>
                 </div>
-            </section>
+            </section> : ""}
             {
                 isOpen ? <section className="fixed inset-0 z-50 bg-black w-full h-full bg-opacity-70 grid place-items-center p-5">
                     <div className="bg-white w-full max-w-[500px] h-fit">
@@ -130,7 +133,7 @@ export default function CartPage() {
                                 <tbody>
                                     <tr className="flex justify-between bg-slate-200 ">
                                         <th className="p-5">Total Items</th>
-                                        <td className="p-5">{data ? data.length : null}</td>
+                                        <td className="p-5">{data.length ? data.length : null}</td>
                                     </tr>
                                     <tr className="flex justify-between bg-slate-100">
                                         <th className="p-5 ">Total Amount</th>
