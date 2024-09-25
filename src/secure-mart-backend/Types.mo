@@ -1,11 +1,61 @@
 module Types {
 
+    public type Product = {
+        id : Nat;
+        title : Text;
+        description : Text;
+        category : Text;
+        price : Float;
+        discountPercentage : Float;
+        rating : Float;
+        stock : Nat;
+        tags : [Text];
+        sku : Text;
+        weight : Float;
+        dimensions : Dimensions;
+        warrantyInformation : Text;
+        shippingInformation : Text;
+        availabilityStatus : Text;
+        reviews : [Review];
+        returnPolicy : Text;
+        minimumOrderQuantity : Nat;
+        meta : Meta;
+        images : [Text];
+        thumbnail : Text;
+    };
+
+    type Dimensions = {
+        width : Float;
+        height : Float;
+        depth : Float;
+    };
+
+    type Review = {
+        rating : Float;
+        comment : Text;
+        date : Text;
+        reviewerName : Text;
+        reviewerEmail : Text;
+    };
+
+    type Meta = {
+        createdAt : Text;
+        updatedAt : Text;
+        barcode : Text;
+        qrCode : Text;
+    };
+
     public type CartItem = {
         id : Nat;
         title : Text;
         price : Float;
         quantity : Nat;
         imageUrl : Text;
+    };
+
+    public type UserCart = {
+        principal : Text;
+        cart : [CartItem];
     };
 
     public type Order = {

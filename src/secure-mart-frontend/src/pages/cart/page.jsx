@@ -15,7 +15,7 @@ export default function CartPage() {
     const [isOrdering, setIsOrdering] = useState(false);
     const navigate = useNavigate()
 
-    const amount = data ? data.reduce((sum, ele) => {
+    const amount = data ? data[0].cart.reduce((sum, ele) => {
         if (ele.quantity > 1) {
             return sum += (ele.price * Number(ele.quantity))
         } else {
@@ -99,7 +99,7 @@ export default function CartPage() {
                 </header>
                 <div className="overflow-x-auto">
                     {
-                        data ? <CartListItems cartItems={data} /> : null
+                        data ? <CartListItems cartItems={data[0].cart} /> : null
                     }
                 </div>
                 <Link to="/" className="w-fit flex items-center gap-1 font-semibold text-yellow-500 text-sm hover:underline hover:gap-2 duration-300 ease-in-out transition-all"><FaArrowLeftLong className="h-fit mt-[2px]" /> Continue Shopping</Link>

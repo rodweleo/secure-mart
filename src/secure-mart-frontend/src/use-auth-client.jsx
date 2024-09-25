@@ -9,8 +9,10 @@ export const getIdentityProvider = () => {
   // Safeguard against server rendering
   if (typeof window !== "undefined") {
     const isLocal = process.env.DFX_NETWORK !== "ic";
-    //const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-    if (isLocal) {
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    if (isLocal && isSafari) {
+      idpProvider = `http://localhost:4943?canisterId=${process.env.CANISTER_ID_INTERNET_IDENTITY}`;
+    } else if (isLocal) {
       idpProvider = `http://${process.env.CANISTER_ID_INTERNET_IDENTITY}.localhost:4943`;
     } else {
       idpProvider = `https://identity.ic0.app`;
@@ -18,6 +20,10 @@ export const getIdentityProvider = () => {
   }
   return idpProvider;
 };
+
+const days = BigInt(1);
+const hours = BigInt(24);
+const nanoseconds = BigInt(3600000000000);
 
 export const defaultOptions = {
   /**
@@ -34,6 +40,7 @@ export const defaultOptions = {
    */
   loginOptions: {
     identityProvider: getIdentityProvider(),
+    maxTimeToLive: days * hours * nanoseconds,
   },
 };
 

@@ -1,7 +1,8 @@
 import BackendActor from "../utils/BackendActor";
 
 const fetchCart = async () => {
-    const response = await BackendActor.getCart();
+    const principal = await BackendActor.whoami();
+    const response = await BackendActor.getUserCart(principal)
     return response
 }
 

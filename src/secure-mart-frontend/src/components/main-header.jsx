@@ -8,7 +8,7 @@ import { useState } from "react";
 export default function MainHeader() {
     const { logout } = useAuth();
     const navigate = useNavigate()
-    const { data, isFetching } = useCartQuery()
+    const { data } = useCartQuery()
     const [isOpen, setIsOpen] = useState(false)
 
     const navigateToMyOrdersPage = () => {
@@ -29,7 +29,7 @@ export default function MainHeader() {
                             <Link to="/cart" className="active:scale-90 h-full relative text-yellow-500 flex gap-3">
                                 <div className="relative">
                                     <ShoppingCart />
-                                    <span className='absolute -top-3 -right-3 font-semibold size-6 flex items-center justify-center text-white bg-yellow-500 border-2 border-white rounded-[50%]'>{isFetching ? null : data.length}</span>
+                                    <span className='absolute -top-3 -right-3 font-semibold size-6 flex items-center justify-center text-white bg-yellow-500 border-2 border-white rounded-[50%]'>{0}</span>
                                 </div>
                                 <span className="text-lg">Cart</span>
                             </Link>

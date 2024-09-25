@@ -1,18 +1,16 @@
 import { useLocation } from "react-router-dom"
 import { Minus, Plus, Star } from 'lucide-react';
 import { ShoppingCart } from 'lucide-react';
-import { useRef, useState } from "react";
-import { useDispatch } from "react-redux";
-import { addProductToCart } from "../../../state-management/slices/cartSlice";
+import { useState } from "react";
 import { toast } from "react-toastify"
 import ProductReviewCard from "../../../components/product-review-card"
 import RelatedProducts from "../../../components/related-products";
 import convertUSDToKsh from "../../../functions/convertUSDToKsh";
+import BackendActor from "../../../utils/BackendActor";
 
 export default function ProductPage() {
     const location = useLocation()
     const { product } = location.state;
-    const dispatch = useDispatch();
     const [selectedProductImage, setSelectedimage] = useState(product.images[0])
     const [quantity, setQuantity] = useState(0);
 
@@ -32,14 +30,12 @@ export default function ProductPage() {
             return;
         }
         try {
-            const newProduct = {
-                id: product.id,
-                title: product.title,
-                price: product.price,
-                imageUrl: product.thumbnail,
-                quantity: quantity
-            }
-            dispatch(addProductToCart(newProduct))
+            const principal = await BackendActor.whoami();
+
+            const response = await BackendActor.addProductToCart(Number(product.id), product.title, product.price, quantity, product.thumbnail, principal);
+            toast.success(response, {
+                theme: "colored"
+            })
         } catch (e) {
             console.log(e)
             toast.error(e.message, {
@@ -47,6 +43,8 @@ export default function ProductPage() {
             })
         }
     }
+
+
 
     const displayProductImage = (imageSrc) => {
         setSelectedimage(imageSrc)

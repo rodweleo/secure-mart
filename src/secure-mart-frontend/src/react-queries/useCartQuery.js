@@ -3,12 +3,7 @@ import fetchCart from "../functions/fetchCart";
 
 const useCartQuery = () => {
 
-    const queryOptions = {
-        refetchIntervalInBackground: true,
-        refetchInterval: 5000
-    }
-
-    const { data , isFetching, error} = useQuery("cart", fetchCart, queryOptions)
+    const { data , isFetching, error} = useQuery("cart", fetchCart)
     
 
     return {
