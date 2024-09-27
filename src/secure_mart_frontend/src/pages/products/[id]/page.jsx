@@ -1,13 +1,7 @@
 import { useLocation } from "react-router-dom"
 import { Minus, Plus, Star, StarHalf } from 'lucide-react';
 import { ShoppingCart } from 'lucide-react';
-<<<<<<< HEAD:src/secure-mart-frontend/src/pages/products/[id]/page.jsx
-import { useState } from "react";
-=======
-import { useEffect, useRef, useState } from "react";
-import { useDispatch } from "react-redux";
-import { addProductToCart } from "../../../state-management/slices/cartSlice";
->>>>>>> ebd4bdfd89f3be9e20bde182613fca34b1c6bd3f:src/secure_mart_frontend/src/pages/products/[id]/page.jsx
+import { useState, useEffect } from "react";
 import { toast } from "react-toastify"
 import ProductReviewCard from "../../../components/product-review-card"
 import RelatedProducts from "../../../components/related-products";
@@ -51,8 +45,6 @@ export default function ProductPage() {
         }
     }
 
-
-
     const displayProductImage = (imageSrc) => {
         setSelectedimage(imageSrc)
     }
@@ -62,20 +54,20 @@ export default function ProductPage() {
         setRating(Math.round(product.rating * 2) / 2)
     }, [product])
 
-      // Helper function to render stars based on rating
-  const renderStars = () => {
-    const stars = [];
-    for (let i = 1; i < 6; i++) {
-      if (i <= rating) {
-        // Full star
-        stars.push(<Star key={`star-${i}`} fill={"#ffe234"} color="gold" />);
-      } else if (i - 0.5 === rating) {
-        // Half star for decimal ratings
-        stars.push(<StarHalf key={`star-${i}`} fill={"#ffe234"} color="gold" />);
-      }
-    }
-    return stars;
-  };
+    // Helper function to render stars based on rating
+    const renderStars = () => {
+        const stars = [];
+        for (let i = 1; i < 6; i++) {
+            if (i <= rating) {
+                // Full star
+                stars.push(<Star key={`star-${i}`} fill={"#ffe234"} color="gold" />);
+            } else if (i - 0.5 === rating) {
+                // Half star for decimal ratings
+                stars.push(<StarHalf key={`star-${i}`} fill={"#ffe234"} color="gold" />);
+            }
+        }
+        return stars;
+    };
 
     return (
         <main className="space-y-5">
@@ -101,7 +93,7 @@ export default function ProductPage() {
                             <span className="text-xl text-slate-500 font-medium">{product.reviews.length} reviews</span>
                         </div>
 
-                        <div className="font-bold text-4xl text-green-500">{convertUSDToKsh(product.price)}</div>
+                        <div className="font-bold text-4xl text-green-500">${product.price}</div>
                     </header>
 
                     <div className="w-full flex flex-wrap gap-10 items-end justify-between">

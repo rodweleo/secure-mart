@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom"
-import convertUSDToKsh from "../functions/convertUSDToKsh"
 export default function ProductCard({ product }) {
 
     const slug = product.title.toLowerCase().concat("_", product.id).trim().replaceAll(" ", "_")
@@ -14,7 +13,7 @@ export default function ProductCard({ product }) {
                     <h1 className="font-bold text-2xl text-wrap line-clamp-1">{product.title}</h1>
                     <p className="text-slate-400 line-clamp-2 text-md">{product.description}</p>
                 </div>
-                <span className="font-bold text-2xl text-green-600">{convertUSDToKsh(product.price)}
+                <span className="font-bold text-2xl text-green-600">${product.price}
                 </span>
             </div>
         </div>

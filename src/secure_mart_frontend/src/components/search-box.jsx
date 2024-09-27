@@ -12,7 +12,7 @@ export default function SearchBox() {
   const navigate = useNavigate();
 
   // Debounce the search query
-  const debouncedSearchQuery = useDebounce(searchQuery, 300);
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
   useEffect(() => {
     // Perform the search when the debounced search query changes
@@ -20,11 +20,8 @@ export default function SearchBox() {
       if (query.length > 0) {
         setIsSearching(true);
         try {
-          const response = await BackendActor.searchProduct(query);
-          const modRes = JSON.parse(response);
-          if (modRes) {
-            setSearchResults(modRes.products);
-          }
+          const products = await BackendActor.searchProduct(query);
+          setSearchResults(products);
         } catch (e) {
           setSearchResults([]);
         }
@@ -43,9 +40,11 @@ export default function SearchBox() {
     setSearchQuery(query);
   };
 
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
-    // Implement form submission if needed
+
+    const products = await BackendActor.searchProduct(searchQuery);
+    setSearchResults(products);
   };
 
   const selectProduct = (product) => {
@@ -77,7 +76,7 @@ export default function SearchBox() {
         </div>
       )}
       {searchResults.length > 0 && (
-        <ul className="absolute h-[400px] overflow-y-scroll bg-slate-50/50 backdrop-blur-md border w-full top-[50px] rounded-2xl p-2.5">
+        <ul className="absolute h-fit overflow-y-auto bg-slate-50/50 backdrop-blur-md border w-full top-[50px] rounded-2xl p-2.5">
           {searchResults.map((result) => (
             <li
               key={result.id}

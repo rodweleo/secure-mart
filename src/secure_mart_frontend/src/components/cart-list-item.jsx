@@ -1,4 +1,3 @@
-import convertUSDToKsh from "../functions/convertUSDToKsh";
 
 export default function CartListItem({ cartItem, index }) {
 
@@ -15,8 +14,8 @@ export default function CartListItem({ cartItem, index }) {
                 </div>
             </td>
             <td>{quantity}</td>
-            <td>{convertUSDToKsh(price)}</td>
-            <td>{convertUSDToKsh(price * quantity)}</td>
+            <td>{price}</td>
+            <td>{(price * quantity).toPrecision(4)}</td>
         </tr>
     )
 }

@@ -8,11 +8,11 @@ export default function OrderList({ orders }) {
                     <th className="p-4">#</th>
                     <th>Order ID</th>
                     <th>Items</th>
-                    <th>Total</th>
-                    <th>Payment</th>
-                    <th>Date</th>
-                    <th>Delivery</th>
-                    <th>Fulfilment</th>
+                    <th>Amount($)</th>
+                    <th>Mode of Payment</th>
+                    <th>Payment Status</th>
+                    <th>Date of Order</th>
+
                 </tr>
             </thead>
             <tbody className="border">

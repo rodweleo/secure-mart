@@ -53,9 +53,11 @@ module Types {
         imageUrl : Text;
     };
 
+    public type Cart = [CartItem];
+
     public type UserCart = {
-        principal : Text;
-        cart : [CartItem];
+        identity : Text;
+        cart : Cart;
     };
 
     public type Order = {
@@ -63,7 +65,26 @@ module Types {
         items : [CartItem];
         totalAmount : Float;
         orderDate : Text;
-        customerPrincipal : Text;
+        orderedBy : Text;
+        paymentStatus : Text;
+        monthlyInstallments : Nat;
+        monthlyInstallmentPayment : Float;
+        modeOfPayment : Text;
+        remainingMonthlyInstallments : Nat;
+    };
+
+    public type GetProductByIdResult = {
+        #ok : Product;
+        #err : Text;
+    };
+
+    public type Payment = {
+        orderId : Text;
+        paymentType : Text;
+        dateOfPayment : Text;
+        amount : Float;
+        paidBy : Text;
+        monthInstallment : Nat;
     };
 
     public type Timestamp = Nat64;

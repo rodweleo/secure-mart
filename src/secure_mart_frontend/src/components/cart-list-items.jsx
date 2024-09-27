@@ -15,9 +15,9 @@ export default function CartListItems({ cartItems }) {
                 </tr>
             </thead>
             <tbody className="w-full">
-                {cartItems.map((cartItem, index) => (
+                {cartItems ? cartItems.map((cartItem, index) => (
                     <CartListItem cartItem={cartItem} index={index} />
-                ))}
+                )) : null}
             </tbody>
         </table>
     )

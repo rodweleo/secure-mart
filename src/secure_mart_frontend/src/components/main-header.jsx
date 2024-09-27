@@ -11,6 +11,7 @@ export default function MainHeader() {
     const { data } = useCartQuery()
     const [isOpen, setIsOpen] = useState(false)
 
+    const cart = data ? data : []
     const navigateToMyOrdersPage = () => {
         setIsOpen(false);
         navigate("/orders")
@@ -29,7 +30,7 @@ export default function MainHeader() {
                             <Link to="/cart" className="active:scale-90 h-full relative text-yellow-500 flex gap-3">
                                 <div className="relative">
                                     <ShoppingCart />
-                                    <span className='absolute -top-3 -right-3 font-semibold size-6 flex items-center justify-center text-white bg-yellow-500 border-2 border-white rounded-[50%]'>{0}</span>
+                                    <span className='absolute -top-3 -right-3 font-semibold size-6 flex items-center justify-center text-white bg-yellow-500 border-2 border-white rounded-[50%]'>{cart.length}</span>
                                 </div>
                                 <span className="text-lg">Cart</span>
                             </Link>

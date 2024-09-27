@@ -5,8 +5,6 @@ import Text "mo:base/Text";
 import Types "Types";
 import Principal "mo:base/Principal";
 import Nat "mo:base/Nat";
-import TrieMap "mo:base/TrieMap";
-import HashMap "mo:base/HashMap";
 
 actor {
 
@@ -371,6 +369,12 @@ actor {
     },
   ];
 
+  stable var orders : [Types.Order] = [];
+  stable var order_payments : [Types.Payment] = [];
+
+  // Stable array to store user carts as an array of UserCart objects
+  stable var user_carts : [Types.UserCart] = [];
+
   public query func transform(raw : Types.TransformArgs) : async Types.CanisterHttpResponsePayload {
     let transformed : Types.CanisterHttpResponsePayload = {
       status = raw.response.status;
@@ -397,106 +401,38 @@ actor {
     return products;
   };
 
-  public func searchProduct(productName : Text) : async Text {
+  public func searchProduct(productName : Text) : async [Types.Product] {
+    //search for the product using the product
+    let matchingProducts = Array.filter<Types.Product>(
+      products,
+      func(product) {
+        Text.contains(product.title, #text productName);
+      },
+    );
 
-    // Defining the management canister
-    let ic : Types.IC = actor ("aaaaa-aa");
-
-    // Setting up the URL for the request
-    let host : Text = "securemart-worker.securemart.workers.dev";
-    let url : Text = "https://" # host # "/products/search?q=" # productName;
-
-    // Setting up the headers for the request
-    let request_headers = [
-      { name = "Host"; value = host # ":443" },
-      { name = "User-Agent"; value = "product_canister" },
-    ];
-
-    // Defining the transformation context
-    let transform_context : Types.TransformContext = {
-      function = transform;
-      context = Blob.fromArray([]);
-    };
-
-    // Creating the HTTP request
-    let http_request : Types.HttpRequestArgs = {
-      url = url;
-      max_response_bytes = null;
-      headers = request_headers;
-      body = null;
-      method = #get;
-      transform = ?transform_context;
-    };
-
-    // Add cycles for the request
-    Cycles.add(20_949_972_000);
-
-    // Making the HTTP request and waiting for the response
-    let http_response : Types.HttpResponsePayload = await ic.http_request(http_request);
-
-    // Converting the response body from Nat8 array to a Blob
-    let response_body : Blob = Blob.fromArray(http_response.body);
-
-    // Decoding the Blob into a UTF-8 Text string
-    let decoded_text : Text = switch (Text.decodeUtf8(response_body)) {
-      case (null) { "No value returned" };
-      case (?y) { y };
-    };
-
-    // returning the found products
-    decoded_text;
+    matchingProducts;
   };
 
-  public func getProductById(productId : Nat) : async Text {
-
-    // Define the management canister
-    let ic : Types.IC = actor ("aaaaa-aa");
-
-    // Set up the URL for the request
-    let host : Text = "securemart-worker.securemart.workers.dev";
-    let url : Text = "https://" # host # "/products/" # Nat.toText(productId);
-
-    // Set up the headers for the request
-    let request_headers = [
-      { name = "Host"; value = host # ":443" },
-      { name = "User-Agent"; value = "product_canister" },
-    ];
-
-    // Define the transformation context
-    let transform_context : Types.TransformContext = {
-      function = transform;
-      context = Blob.fromArray([]);
+  public func getProductById(productId : Nat) : async Types.GetProductByIdResult {
+    // Check if the product ID is valid
+    if (productId < 0) {
+      return #err("Invalid product ID.");
     };
 
-    // Create the HTTP request
-    let http_request : Types.HttpRequestArgs = {
-      url = url;
-      max_response_bytes = null; // optional for request
-      headers = request_headers;
-      body = null; // optional for request
-      method = #get;
-      transform = ?transform_context;
+    //find the product using the product id
+    let product = Array.find<Types.Product>(products, func(item : Types.Product) { item.id == productId });
+
+    switch (product) {
+      case (?product) {
+        return #ok(product);
+      };
+      case null {
+        return #err("No matching product found.");
+      };
     };
 
-    // Add cycles for the request
-    Cycles.add(20_849_597_600);
-
-    // Make the HTTP request and wait for the response
-    let http_response : Types.HttpResponsePayload = await ic.http_request(http_request);
-
-    // Convert the response body from Nat8 array to a Blob
-    let response_body : Blob = Blob.fromArray(http_response.body);
-
-    // Decode the Blob into a UTF-8 Text string
-    let decoded_text : Text = switch (Text.decodeUtf8(response_body)) {
-      case (null) { "No value returned" };
-      case (?y) { y };
-    };
-
-    // Optionally, extract and return the prodict from the decoded JSON text
-    decoded_text;
   };
-  
+
   public func getCategoryProducts(category : Text) : async Text {
 
     // Define the management canister
@@ -547,14 +483,10 @@ actor {
     decoded_text;
   };
 
-  // Stable array to store user carts as an array of UserCart objects
-  stable var user_carts : [Types.UserCart] = [];
-
-<<<<<<< HEAD:src/secure-mart-backend/main.mo
   // Function to add or update products in a user's cart
-  public func addProductToCart(id : Nat, title : Text, price : Float, quantity : Nat, imageUrl : Text, callerPrincipal : Text) : async Text {
+  public func addProductToCart(id : Nat, title : Text, price : Float, quantity : Nat, imageUrl : Text, user : Text) : async Text {
     // Input Validation
-    if (id <= 0) {
+    if (id < 1) {
       return "Invalid product ID.";
     };
 
@@ -562,40 +494,36 @@ actor {
       return "Invalid product title.";
     };
 
-    if (price <= 0.0) {
+    if (price <= 0.1) {
       return "Invalid product price.";
     };
 
-    if (quantity <= 0) {
+    if (quantity < 1) {
       return "Invalid product quantity.";
-    };
-
-    if (imageUrl.size() == 0) {
-      return "Invalid image URL.";
     };
 
     //check if the user has an active cart
     var user_cart = Array.filter<Types.UserCart>(
       user_carts,
       func(entry) {
-        entry.principal == callerPrincipal;
+        entry.identity == user;
       },
     );
 
     if (Array.size(user_cart) > 0) {
       //means the user has an active cart;
       //Step 1: Check if the cart has the above product in the cart
-      var activeCart = user_cart[0].cart;
+      var userCart = user_cart[0].cart;
 
       //check if the product is within the cart
       // Check if the product already exists in the cart
-      let existingProduct = Array.find<Types.CartItem>(activeCart, func(item : Types.CartItem) { item.id == id });
+      let existingProduct = Array.find<Types.CartItem>(userCart, func(item : Types.CartItem) { item.id == id });
 
       let newCart = switch (existingProduct) {
         case (?existingProduct) {
           // Product exists, update quantity
           Array.map<Types.CartItem, Types.CartItem>(
-            activeCart,
+            userCart,
             func(ele : Types.CartItem) {
               if (ele.id == id) {
                 {
@@ -621,7 +549,7 @@ actor {
             quantity = quantity;
             imageUrl = imageUrl;
           };
-          activeCart := Array.append(activeCart, [newProduct]); // Append the new product to the cart
+          userCart := Array.append(userCart, [newProduct]); // Append the new product to the cart
         };
       };
 
@@ -643,7 +571,7 @@ actor {
       );
 
       let userCart = {
-        principal = callerPrincipal;
+        identity = user;
         cart = cart;
       };
 
@@ -651,49 +579,6 @@ actor {
       return "Product added to cart";
     };
 
-=======
-  //1. Adding a product to the cart
-  public func addProductToCart(id : Nat, title : Text, price : Float, quantity : Nat, imageUrl : Text) : async Text {
-
-    let existingProduct = Array.find<Types.CartItem>(cart, func(item) { item.id == id });
-
-    switch (existingProduct) {
-      case (?existingProduct) {
-        // Product already exists in the cart, update its quantity and total price
-        cart := Array.map<Types.CartItem, Types.CartItem>(
-          cart,
-          func(item) {
-            if (item.id == id) {
-              {
-                id = item.id;
-                title = item.title;
-                price = item.price; // Assuming you keep the original price
-                quantity = item.quantity + quantity; // Update the quantity
-                imageUrl = item.imageUrl;
-              };
-            } else {
-              item // Return the item unchanged
-            };
-          },
-        );
-
-        "Product added to cart successfully.";
-      };
-      case null {
-        // Product does not exist in the cart, add it
-        let newProduct = {
-          id = id;
-          title = title;
-          price = price; // Set the initial total price
-          quantity = quantity;
-          imageUrl = imageUrl;
-        };
-
-        cart := Array.append(cart, [newProduct]); // Add the new product to the cart
-        "Product added to cart successfully.";
-      };
-    };
->>>>>>> ebd4bdfd89f3be9e20bde182613fca34b1c6bd3f:src/secure_mart_backend/main.mo
   };
 
   //2. Getting all products in the cart
@@ -701,50 +586,75 @@ actor {
     let userCart = Array.filter<Types.UserCart>(
       user_carts,
       func(entry) {
-        entry.principal == userPrincipal;
+        entry.identity == userPrincipal;
       },
     );
     return userCart;
   };
 
-  public func clearCart() : async Text {
-    "Your cart has been cleared";
+  public func clearUserCart(user_principal : Text) : async Text {
+
+    if (user_principal == "") {
+      return "Provide a valid user principal";
+    };
+
+    let userCartsToClear = Array.filter<Types.UserCart>(
+      user_carts,
+      func(ele) {
+        ele.identity != user_principal;
+      },
+    );
+
+    if (Array.size(userCartsToClear) == 0) {
+      return user_principal # "'s cart is not available.";
+    };
+
+    user_carts := userCartsToClear;
+
+    return user_principal # "'s cart has been cleared!";
   };
 
-  stable var orders : [Types.Order] = [];
-
-  public func createOrder(id : Text, items : [Types.CartItem], totalAmount : Float, orderDate : Text, customerPrincipal : Text) : async Text {
+  public func createOrder(id : Text, items : [Types.CartItem], paymentStatus : Text, modeOfPayment : Text, monthlyInstallments : Nat, monthlyInstallmentPayment : Float, totalAmount : Float, orderDate : Text, orderedBy : Text) : async Text {
     let newOrder = {
       id = id;
       items = items;
       totalAmount = totalAmount;
       orderDate = orderDate;
-      customerPrincipal = customerPrincipal;
+      orderedBy = orderedBy;
+      paymentStatus = paymentStatus;
+      modeOfPayment = modeOfPayment;
+      monthlyInstallments = monthlyInstallments;
+      monthlyInstallmentPayment = monthlyInstallmentPayment;
+      remainingMonthlyInstallments = monthlyInstallments;
     };
 
     orders := Array.append(orders, [newOrder]);
 
+    //save the payment information into the order payments array.
+    let newPayment = {
+      orderId = id;
+      paymentType = "Deposit";
+      dateOfPayment = orderDate;
+      amount = (0.6 * totalAmount);
+      paidBy = orderedBy;
+      monthInstallment = 0;
+    };
+
+    order_payments := Array.append(order_payments, [newPayment]);
+
     "Order has been created";
   };
 
-<<<<<<< HEAD:src/secure-mart-backend/main.mo
   public func clearOrders(callerPrincipal : Text) : async Text {
-    // Replace with your actual admin principal or list of admin principals
-    let adminPrincipal : Text = "your_admin_principal_here";
+    let adminPrincipal : Text = "2vxsx-fae";
 
     // Check if the caller is the admin
     if (callerPrincipal == adminPrincipal) {
-      orders := []; // Clear all orders
+      orders := [];
       return "All orders have been cleared successfully.";
     } else {
       return "Unauthorized access: Only admins can clear orders.";
     };
-=======
-  public func clearOrders() : async Text {
-    orders := [];
-
-    "Orders cleared!";
->>>>>>> ebd4bdfd89f3be9e20bde182613fca34b1c6bd3f:src/secure_mart_backend/main.mo
   };
 
   public query (msg) func whoami() : async Text {
@@ -755,14 +665,102 @@ actor {
     orders;
   };
 
-  public query func getUserOrders(customerPrincipal : Text) : async [Types.Order] {
+  public query func getUserOrders(user_principal : Text) : async [Types.Order] {
     let userOrders = Array.filter<Types.Order>(
       orders,
       func(order) {
-        order.customerPrincipal == customerPrincipal;
+        order.orderedBy == user_principal;
       },
     );
     userOrders;
+  };
+
+  public func makeOrderInstallmentPayment(orderId : Text, paidBy : Text, amount : Float, dateOfPayment : Text, paymentType : Text, monthInstallment : Nat) : async Text {
+    if (orderId == "") {
+      return "Order ID is required";
+    };
+
+    // Check if the order exists
+    let existingOrders = Array.filter<Types.Order>(
+      orders,
+      func(order) {
+        order.id == orderId;
+      },
+    );
+
+    if (Array.size(existingOrders) == 0) {
+      return "Order " # orderId # " details not found!";
+    };
+
+    // Prepare the installment payment record
+    let installmentPayment = {
+      orderId = orderId;
+      paidBy = paidBy;
+      amount = amount;
+      dateOfPayment = dateOfPayment;
+      paymentType = paymentType;
+      monthInstallment = monthInstallment;
+    };
+
+    var paymentSuccessMessage : Text = "";
+
+    // Check if it's the last installment month and update order accordingly
+    orders := Array.map<Types.Order, Types.Order>(
+      orders,
+      func(ele : Types.Order) {
+        if (ele.id == orderId) {
+          if (ele.monthlyInstallments == monthInstallment) {
+            // Completing the payment for the order
+            paymentSuccessMessage := "Final payment made successfully!";
+            return {
+              id = orderId;
+              items = ele.items;
+              totalAmount = ele.totalAmount;
+              orderDate = ele.orderDate;
+              orderedBy = ele.orderedBy;
+              paymentStatus = "COMPLETED";
+              modeOfPayment = ele.modeOfPayment;
+              monthlyInstallments = ele.monthlyInstallments;
+              monthlyInstallmentPayment = ele.monthlyInstallmentPayment;
+              remainingMonthlyInstallments = 0;
+            };
+          } else {
+            // Customer has more upcoming payments
+            paymentSuccessMessage := "Payment made successfully! Remaining installments updated.";
+            return {
+              id = orderId;
+              items = ele.items;
+              totalAmount = ele.totalAmount;
+              orderDate = ele.orderDate;
+              orderedBy = ele.orderedBy;
+              paymentStatus = ele.paymentStatus;
+              modeOfPayment = ele.modeOfPayment;
+              monthlyInstallments = ele.monthlyInstallments;
+              monthlyInstallmentPayment = ele.monthlyInstallmentPayment;
+              remainingMonthlyInstallments = ele.monthlyInstallments - monthInstallment;
+            };
+          };
+        } else {
+          return ele;
+        };
+      },
+    );
+
+    // Append the new installment payment to the order payments array
+    order_payments := Array.append(order_payments, [installmentPayment]);
+
+    return paymentSuccessMessage;
+  };
+
+  public query func getOrderPaymentHistory(orderId : Text) : async [Types.Payment] {
+    let orderPayments = Array.filter<Types.Payment>(
+      order_payments,
+      func(payment) {
+        payment.orderId == orderId;
+      },
+    );
+
+    return orderPayments;
   };
 
 };

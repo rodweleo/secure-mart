@@ -15,10 +15,26 @@
 #order-summary-table tbody th{
   text-align: left;
   padding: 5px 0;
+  width: 100%;
 }
 
 #order-summary-table tbody  td{
   text-align: right;
+}
+
+#order-payment-table{
+  width: 100%;
+}
+#order-payment-table tbody tr>th {
+  padding:20px;
+  text-align: left;
+  font-weight: 500;
+  color: gray
+}
+
+#order-payment-table tbody tr>td {
+  text-align: right;
+  font-weight: bold;
 }
 
 @layer base {
